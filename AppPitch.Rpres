@@ -1,0 +1,79 @@
+Linear Regression with two explanatory variables
+========================================================
+author: Rudy Pastel
+date: `r date()`
+
+See a regression surface
+========================================================
+
+The class was exemplified with many 2D plots whereas I believe Big Data implies higher dimensional spaces. Furthermore, I enjoyed the nice $\LaTeX$ equations being a mathematician myself. So, here is my contribution.
+- a linear regression with two explanatory variables
+- a $\LaTeX$ equation
+- a 3D visualisation
+
+I hope you will enjoy this.
+
+Simple code to create the data set
+========================================================
+#### Data generation model
+
+$$ Y = \alpha_0 + \alpha_1 X_1 + \alpha_2X_2 + \sigma \mathcal{N}(0,1)$$
+
+#### Model parameters
+```{r}
+nobs = 1000
+a0 = 1
+a1 = 2
+a2 = 3
+sigma = 4
+```
+#### Data generation code
+```{r}
+X <- matrix(data = c(runif(n = 2* nobs)),ncol = 2)
+Y <- a0 + X %*% c(a1,a2) + sigma * rnorm(n = nobs)
+info <- data.frame(as.data.frame(X),Y)
+names(info)  <- c("x1","x2","y")
+```
+
+A textbook linear regression
+========================================================
+
+```{r}
+fit <- lm(formula = y~.,data = info)
+summary(fit)$coefficient
+```
+
+Preparing the 3D visualisation 
+========================================================
+
+```{r}
+
+# Mesh the plotted grid 
+x1r  <- range(info$x1)
+x1seq  <- seq(from = x1r[1],to = x1r[2],length.out = 30)
+x2r  <- range(info$x2)
+x2seq  <- seq(from = x2r[1],to = x2r[2],length.out = 30)
+#Function to put points on the regression plan
+f <- function(x1, x2, coeff){
+  coeff["(Intercept)"] + coeff["x1"]* x1 + coeff["x2"]* x2
+}
+z = outer(x1seq ,x2seq ,f,fit$coefficient)
+
+```
+
+
+3D Visualisation
+========================================================
+
+```{r}
+# Plot the regression plan then add observed points
+res  <- persp(x1seq ,x2seq ,z)
+mypoints  <- trans3d(info$x1, info$x2, info$y, pmat = res)
+points(mypoints , pch = 1, col = "red")
+```
+
+Next class: HTML5, Javascipt and CSS!
+========================================================
+
+The results are there, but obviously need a better display. I will fix that with my next classes, promise!
+In the meanwhile, I will stick to Shiny, with which I could do the same thing so much better!
